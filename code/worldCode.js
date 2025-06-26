@@ -41,11 +41,26 @@ function hash(x, y) {
     return (x * 645654564) ^ (y * 5466343253);
 }
 
+function getElevation(x, y) {
+const elevation = getElevation(x, y);
+// optional: darken tiles slightly based on elevation
+ctx.globalAlpha = 1 - Math.max(0, Math.min(elevation * 0.1, 0.2));
+ctx.drawImage(tileImg, screenX - tileWidth / 2, screenY, tileWidth, tileHeight);
+ctx.globalAlpha = 1;
+
+    return Math.sin((x + 100) * 0.02) + Math.cos((y - 100) * 0.02);
+}
+
 function getTileType(x, y) {
-    const value = Math.sin((x * 0.05) + Math.cos(y * 0.05));
+    const value = Math.sin((x * 0.05) + Math.cos(y * 0.05))
     const waterNoise = Math.sin((x + y * 2) * 0.03);
+    const dirtPatchNoise = Math.sin((x * 43) + Math.cos(y * 0.01));
+
     if (value < -0.5 || waterNoise > 0.8) return "water";
-    if (value < -0.4 || waterNoise > 0.7) return "dirt";
+
+    // clustered dirt patches
+    if (dirtPatchNoise > 0.98) return "dirt";
+
     return "grass";
 }
 
@@ -58,10 +73,10 @@ function getGrassOverlay(x, y) {
 
 function shouldPlaceTree(x, y) {
     const tileType = getTileType(x, y);
-    if (tileType !== "grass" && tileType !== "dirt") return false; // prevents trees from generating on water tiles
+    if (tileType === "water" || tileType === "dirt") return false; // stricter check
 
     const seed = Math.abs(Math.cos(hash(x, y)) * 10000) % 1;
-    return seed < 0.03;
+    return seed < 0.16;
 }
 
 function tileToScreen(x, y) {
