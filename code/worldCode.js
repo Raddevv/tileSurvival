@@ -31,7 +31,7 @@ tileImages.shortGrass.src = "assets/tiles/shortGrass.png";
 const player = { x: 0, y: 0 };
 let cameraX = 0, cameraY = 0;
 
-const moveDelay = 150;
+const moveDelay = 110;
 let canMove = true;
 
 const drawRange = 30;
